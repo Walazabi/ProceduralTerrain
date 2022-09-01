@@ -15,11 +15,15 @@ ATerrainGenerator::ATerrainGenerator()
 void ATerrainGenerator::BeginPlay()
 {
     Super::BeginPlay();
-    
+
+    /* Initialize Seed */
+    srand((unsigned int)time(NULL));
+
     CalculateLOD();
     CreateVertices();
     CreateTriangles();
     CreateMesh();
+    CreateVegetation();
 }
 
 void ATerrainGenerator::Tick(float DeltaTime)
@@ -256,6 +260,95 @@ float ATerrainGenerator::PerlinNoise2D(float x, float y, float scale, int octave
 }
 
 #pragma endregion
+
+#pragma region Vegetation
+
+void ATerrainGenerator::CreateVegetation() 
+{
+    /* Calculate placement EdgeMargin */
+    FVector2D EdgeMargin = FVector2D(ChunkWidth * ChunkEdgeMargin, ChunkHeight * ChunkEdgeMargin);
+
+    for (float y = EdgeMargin.Y; y < ChunkHeight - EdgeMargin.Y;)
+    {
+        for (float x = EdgeMargin.X; x < ChunkWidth - EdgeMargin.X;)
+        {
+            int VegetationIndex = GetRandomVegetationIndex();
+
+            /* Random function resulted in Vegetation to spawn */
+            if (VegetationIndex >= 0 && VegetationIndex < SpawnableVegetation.Num()) 
+            {
+                SpawnVegetation(VegetationIndex, GetTerrainZPosition(FVector(x, y, 0) - Offset), FRotator(0, 0, 0));
+                x += SpawnableVegetation[VegetationIndex].Spacing;
+            }
+            /* No Vegetation spawned */
+            else 
+            {
+                x += DefaultSpacing;
+            } 
+        }
+        y += DefaultSpacing;
+    }
+}
+
+FVector ATerrainGenerator::GetTerrainZPosition(FVector Position)
+{
+    FHitResult Hit;
+    FVector Start = Position + 256;
+    FVector End = Position - 256;
+
+    FCollisionQueryParams TraceParameters;
+    bool TraceHit = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, TraceParameters);
+
+    if (TraceHit) 
+    {
+        return Hit.ImpactPoint;
+    }
+    else 
+    {
+        return Position;
+    }
+}
+
+int ATerrainGenerator::GetRandomVegetationIndex() 
+{
+    /* Return integer by using 'Roulette Wheel Selection' */
+    float Total = 0;
+    float RandomFloat = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+
+    /* Iterate Array of Spawnable Vegetation */
+    for (int i = 0; i < SpawnableVegetation.Num(); i++)
+    {
+        /* Compare if SpawnChance <= RandomFloat */
+        Total += SpawnableVegetation[i].SpawnChance;
+        if (RandomFloat <= Total)
+        {
+            /* Return Index of SpawnableVegetation */
+            return i;
+        }
+    }
+    /* Return -1 for "Null/IsValid check" */
+    return -1;
+}
+
+void ATerrainGenerator::SpawnVegetation(int VegetationIndex, FVector Position, FRotator Rotation)
+{
+    FActorSpawnParameters SpawnParameters;
+    AActor* ActorReference = GetWorld()->SpawnActor<AActor>(SpawnableVegetation[VegetationIndex].VegetationActor, Position, Rotation, SpawnParameters);
+    
+    /* Add Random Scale */
+    float RandomScaleVariation = FMath::FRandRange(-SpawnableVegetation[VegetationIndex].ScaleVariation, SpawnableVegetation[VegetationIndex].ScaleVariation);
+    FVector RandomizedScale = ActorReference->GetActorScale3D();
+    RandomizedScale.X += RandomizedScale.X * RandomScaleVariation;
+    RandomizedScale.Y += RandomizedScale.Y * RandomScaleVariation;
+    RandomizedScale.Z += RandomizedScale.Z * RandomScaleVariation;
+    ActorReference->SetActorScale3D(RandomizedScale);
+
+    /* Add Random Rotation */
+    ActorReference->AddActorLocalRotation(FRotator(FMath::FRandRange(-SpawnableVegetation[VegetationIndex].AngleVariaton, -SpawnableVegetation[VegetationIndex].AngleVariaton), FMath::FRandRange(-180, 180), FMath::FRandRange(-SpawnableVegetation[VegetationIndex].AngleVariaton, -SpawnableVegetation[VegetationIndex].AngleVariaton)));
+}
+
+#pragma endregion
+
 
 #pragma region Debug
 
