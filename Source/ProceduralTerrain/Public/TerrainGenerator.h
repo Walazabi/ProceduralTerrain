@@ -43,9 +43,9 @@ public:
 		int Width = 5;
 	UPROPERTY(Category = "Terrain Mesh", EditAnywhere, Meta = (ClampMin = 1, ClampMax = 32, UIMin = 1, UIMax = 32))
 		int Height = 5;
-	UPROPERTY(Category = "Terrain Mesh", EditAnywhere, Meta = (ClampMin = 1, ClampMax = 256, UIMin = 1, UIMax = 256))
+	UPROPERTY(Category = "Terrain Mesh", EditAnywhere, Meta = (ClampMin = 1, ClampMax = 512, UIMin = 1, UIMax = 512))
 		int ChunkWidth = 512;
-	UPROPERTY(Category = "Terrain Mesh", EditAnywhere, Meta = (ClampMin = 1, ClampMax = 256, UIMin = 1, UIMax = 256))
+	UPROPERTY(Category = "Terrain Mesh", EditAnywhere, Meta = (ClampMin = 1, ClampMax = 512, UIMin = 1, UIMax = 512))
 		int ChunkHeight = 512;
 	UPROPERTY(Category = "Terrain Mesh", EditAnywhere, Meta = (ClampMin = 0, ClampMax = 1, UIMin = 0, UIMax = 1))
 		float LOD = 0.05;

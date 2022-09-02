@@ -349,7 +349,6 @@ void ATerrainGenerator::SpawnVegetation(int VegetationIndex, FVector Position, F
 
 #pragma endregion
 
-
 #pragma region Debug
 
 void ATerrainGenerator::DrawDebugVertex(FVector Position)
