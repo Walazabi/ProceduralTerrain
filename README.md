@@ -1,5 +1,6 @@
 # ProceduralTerrain
-Procedural Terrain Generation in Unreal Engine 5 made for school assignment. Created by Mattias Gustafsson (Walazabi): https://github.com/Walazabi/ProceduralTerrain.<br/>
+Procedural Terrain Generation in Unreal Engine 5 made for school assignment. <br/>
+Created by Mattias Gustafsson (Walazabi): https://github.com/Walazabi/ProceduralTerrain. <br/>
 Vegetation Meshes created by Elias Hjortenklev Wassberg (Zoltcrusher): https://github.com/Zoltcrusher.
 
 ![alt text](https://github.com/Walazabi/ProceduralTerrain/blob/main/README/Preview.png)
